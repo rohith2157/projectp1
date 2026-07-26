@@ -60,7 +60,7 @@ export const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
         ref={ref}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className={`group h-[380px] w-[310px] sm:w-[340px] [perspective:1000px] select-none ${className}`}
+        className={`group h-[380px] w-[calc(100vw-2.5rem)] max-w-[330px] sm:w-[340px] [perspective:1000px] select-none ${className}`}
         {...props}
       >
         <div
