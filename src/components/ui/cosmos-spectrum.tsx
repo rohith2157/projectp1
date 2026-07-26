@@ -46,6 +46,55 @@ export function CosmicSpectrum({ color = "original", blur = false }: CosmicSpect
       })
     }
 
+    const setupAnimations = () => {
+      const gsap = (window as any).gsap
+      const ScrollTrigger = (window as any).ScrollTrigger
+
+      if (!gsap || !ScrollTrigger) return
+
+      // Hero animations
+      const heroTl = gsap.timeline({ delay: 0.5 })
+      heroTl.from(".hero-title-line", {
+        y: 100,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.2,
+        ease: "power4.out",
+      })
+
+      // Section title animations
+      gsap.utils.toArray(".section-title").forEach((title: any) => {
+        gsap.from(title, {
+          scrollTrigger: {
+            trigger: title,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none reverse",
+          },
+          y: 50,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power3.out",
+        })
+      })
+
+      // Parallax elements
+      gsap.utils.toArray(".parallax-bg").forEach((bg: any) => {
+        gsap.to(bg, {
+          scrollTrigger: {
+            trigger: bg,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+          y: -100,
+          ease: "none",
+        })
+      })
+
+      window.addEventListener("resize", () => ScrollTrigger.refresh())
+    }
+
     const initializeAnimations = async () => {
       try {
         await Promise.all([
@@ -54,7 +103,6 @@ export function CosmicSpectrum({ color = "original", blur = false }: CosmicSpect
           loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"),
         ])
 
-        // Wait a bit for scripts to be ready
         setTimeout(() => {
           if ((window as any).gsap && (window as any).ScrollTrigger) {
             (window as any).gsap.registerPlugin((window as any).ScrollTrigger)
@@ -68,148 +116,6 @@ export function CosmicSpectrum({ color = "original", blur = false }: CosmicSpect
 
     initializeAnimations()
   }, [])
-
-  const setupAnimations = () => {
-    const gsap = (window as any).gsap
-    const ScrollTrigger = (window as any).ScrollTrigger
-
-    if (!gsap || !ScrollTrigger) return
-
-    // Hero animations
-    const heroTl = gsap.timeline({ delay: 0.5 })
-
-    // Title animation
-    const titleChars = document.querySelectorAll(".hero-title .char")
-    if (titleChars.length > 0) {
-      gsap.set(titleChars, { opacity: 0, filter: "blur(8px)", x: -20 })
-      heroTl.to(
-        titleChars,
-        {
-          opacity: 1,
-          filter: "blur(0px)",
-          x: 0,
-          duration: 0.8,
-          stagger: 0.03,
-          ease: "power2.out",
-        },
-        0,
-      )
-    }
-
-    // Nav items animation
-    const navItems = document.querySelectorAll(".hero-nav-item")
-    navItems.forEach((item: any) => {
-      gsap.set(item, { opacity: 0, y: 30, filter: "blur(8px)" })
-      heroTl.to(
-        item,
-        {
-          opacity: 1,
-          y: 0,
-          filter: "blur(0px)",
-          duration: 0.8,
-          ease: "power2.out",
-        },
-        0.4,
-      )
-    })
-
-    // Text content animation
-    const textElements = document.querySelectorAll(".hero-text")
-    textElements.forEach((textEl: any, index: number) => {
-      gsap.set(textEl, { opacity: 0, y: 50, clipPath: "inset(0 0 100% 0)" })
-      heroTl.to(
-        textEl,
-        {
-          opacity: 1,
-          y: 0,
-          clipPath: "inset(0 0 0% 0)",
-          duration: 0.8,
-          ease: "power2.out",
-        },
-        0.8 + index * 0.2,
-      )
-    })
-
-    // Scroll hint animation
-    const scrollHintChars = document.querySelectorAll(".scroll-hint .char")
-    if (scrollHintChars.length > 0) {
-      gsap.set(scrollHintChars, { opacity: 0, filter: "blur(3px)" })
-      gsap.to(scrollHintChars, {
-        opacity: 1,
-        filter: "blur(0px)",
-        duration: 0.6,
-        stagger: { each: 0.08, repeat: -1, yoyo: true },
-        ease: "sine.inOut",
-        delay: 1,
-      })
-    }
-
-    // Scroll-triggered animations
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".animation-section",
-        start: "top bottom",
-        end: "bottom bottom",
-        scrub: 1,
-      },
-    })
-
-    const wavelengthLabels = document.querySelectorAll(".wavelength-label")
-    const mainTitle = document.querySelector(".main-title")
-
-    gsap.set([...Array.from(wavelengthLabels), mainTitle], { opacity: 0, y: 30, filter: "blur(8px)" })
-
-    tl.to(".svg-container", { opacity: 1, duration: 0.01 }, 0)
-      .to(".text-grid", { opacity: 1, duration: 0.01 }, 0)
-      .to(".main-title", { opacity: 1, duration: 0.01 }, 0)
-      .to(
-        ".svg-container",
-        {
-          transform: "scaleY(0.05) translateY(-30px)",
-          duration: 0.3,
-          ease: "power2.out",
-        },
-        0,
-      )
-      .to(
-        ".svg-container",
-        {
-          transform: "scaleY(1) translateY(0px)",
-          duration: 1.2,
-          ease: "power2.out",
-        },
-        0.3,
-      )
-      .to(
-        ".nav-bottom-left, .nav-bottom-right, .nav-bottom-center",
-        {
-          opacity: 0,
-          duration: 0.6,
-          ease: "power2.out",
-        },
-        0.2,
-      )
-      .to(
-        [...Array.from(wavelengthLabels), mainTitle],
-        {
-          duration: 0.8,
-          y: 0,
-          opacity: 1,
-          filter: "blur(0px)",
-          stagger: 0.08,
-          ease: "power2.out",
-        },
-        0.9,
-      )
-      .to(".level-5", { y: "-25vh", duration: 0.8, ease: "power2.out" }, 0.9)
-      .to(".level-4", { y: "-20vh", duration: 0.8, ease: "power2.out" }, 0.9)
-      .to(".level-3", { y: "-15vh", duration: 0.8, ease: "power2.out" }, 0.9)
-      .to(".level-2", { y: "-10vh", duration: 0.8, ease: "power2.out" }, 0.9)
-      .to(".level-1", { y: "-5vh", duration: 0.8, ease: "power2.out" }, 0.9)
-
-    // Refresh on resize
-    window.addEventListener("resize", () => ScrollTrigger.refresh())
-  }
 
 
   const currentColors = colorThemes[color] || colorThemes["original"]
