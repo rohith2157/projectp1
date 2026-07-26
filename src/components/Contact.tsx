@@ -129,7 +129,7 @@ export const Contact: React.FC = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: idx * 0.15 }}
                 data-cursor="copy"
-                className="flex items-center justify-between p-5 border border-studio-stone/60 bg-studio-white shadow-soft group hover:border-studio-gold transition-colors duration-500"
+                className="flex items-center justify-between p-5 border border-studio-stone/60 bg-studio-white/80 backdrop-blur-md rounded-2xl shadow-soft group hover:border-studio-gold hover:shadow-lg transition-all duration-400"
               >
                 <div className="flex items-center gap-4">
                   <span className="text-sm font-mono text-studio-gold font-bold">
@@ -143,20 +143,34 @@ export const Contact: React.FC = () => {
                   </a>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
+                  {/* WhatsApp Direct Chat Redirect */}
+                  <a
+                    href={`https://wa.me/91${number}?text=${encodeURIComponent("Hi Pixel's & Portfolio's, I want to discuss a project!")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500 hover:text-white transition-all duration-300 rounded-xl cursor-pointer flex items-center gap-1.5"
+                    title="Chat on WhatsApp"
+                  >
+                    <img src="/whatsapp-logo.png" alt="WhatsApp" className="w-4 h-4 object-contain" />
+                    <span className="text-[11px] font-mono font-bold uppercase hidden sm:inline text-emerald-700 dark:text-emerald-300 group-hover/wa:text-white">
+                      WhatsApp
+                    </span>
+                  </a>
                   {/* Click to copy action icon */}
                   <button
                     onClick={() => handleCopy(`+91${number}`, 'phone number')}
-                    className="p-2 border border-studio-stone/40 hover:bg-studio-dark hover:text-studio-white transition-colors duration-300 rounded-none cursor-pointer"
+                    className="p-2.5 border border-studio-stone/40 hover:bg-studio-dark hover:text-studio-white transition-colors duration-300 rounded-xl cursor-pointer"
                     title="Copy Number"
                   >
-                    <Copy size={12} />
+                    <Copy size={14} />
                   </button>
                   <a
                     href={`tel:${number}`}
-                    className="p-2 bg-studio-dark text-studio-white group-hover:bg-studio-gold transition-colors duration-300 rounded-none cursor-pointer"
+                    className="p-2.5 bg-studio-dark text-studio-white group-hover:bg-studio-gold transition-colors duration-300 rounded-xl cursor-pointer"
+                    title="Call directly"
                   >
-                    <Phone size={12} />
+                    <Phone size={14} />
                   </a>
                 </div>
               </motion.div>
@@ -177,7 +191,7 @@ export const Contact: React.FC = () => {
                 transition={{ duration: 0.8 }}
                 onClick={() => handleCopy(CONTACT_EMAIL, 'email')}
                 data-cursor="copy"
-                className="p-8 border border-studio-navy bg-studio-navy text-studio-white shadow-premium relative group overflow-hidden cursor-pointer"
+                className="p-8 border border-studio-navy/90 bg-studio-navy text-studio-white rounded-3xl shadow-premium relative group overflow-hidden cursor-pointer hover:border-studio-gold transition-all duration-400"
               >
                 <div className="noise-overlay" />
                 <div className="relative z-10 flex flex-col justify-between h-full">

@@ -14,6 +14,7 @@ import { CustomCursor } from './components/CustomCursor';
 import { ProjectModal } from './components/ProjectModal';
 import { type Project } from './data/projects';
 import { AnimatedGradient } from '@/components/ui/animated-gradient-with-svg';
+import { WhatsAppFloat } from './components/WhatsAppFloat';
 
 function App() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -115,6 +116,9 @@ function App() {
 
       {/* Footer */}
       <Footer />
+
+      {/* Floating WhatsApp Quick Contact Widget */}
+      <WhatsAppFloat phoneNumber="918309337729" />
 
       {/* Fullscreen Shared Takeover Image Modal */}
       <ProjectModal

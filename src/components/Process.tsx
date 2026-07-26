@@ -140,14 +140,14 @@ export const Process: React.FC = () => {
                       }}
                       viewport={{ once: true, margin: '-100px' }}
                       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                      className={`p-8 bg-studio-beige border border-studio-border/20 shadow-2xl relative group hover:border-studio-gold/50 transition-all duration-300 rounded-2xl ${
+                      className={`p-8 glass-card glass-card-hover border border-studio-border/20 shadow-2xl relative group hover:border-studio-gold transition-all duration-300 rounded-2xl ${
                         isEven ? 'md:mr-12 md:text-right' : 'md:ml-12'
                       }`}
                     >
-                      <h3 className="text-2xl md:text-3xl font-black font-editorial text-studio-dark uppercase tracking-tight mb-4">
+                      <h3 className="text-2xl md:text-3xl font-black font-editorial text-studio-dark uppercase tracking-tight mb-4 group-hover:text-studio-gold transition-colors duration-300">
                         {step.title}
                       </h3>
-                      <p className="text-sm text-studio-muted leading-relaxed font-sans font-medium text-pretty group-hover:text-studio-dark transition-colors">
+                      <p className="text-sm text-studio-muted leading-relaxed font-sans font-medium text-pretty group-hover:text-studio-dark transition-colors duration-300">
                         {step.description}
                       </p>
                     </motion.div>

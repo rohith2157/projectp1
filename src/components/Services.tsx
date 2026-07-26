@@ -97,6 +97,7 @@ export const Services: React.FC = () => {
                 key={service.id}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
+                onClick={() => setHoveredIndex(hoveredIndex === index ? null : index)}
                 className="relative border-b border-foreground/10 cursor-pointer overflow-hidden group"
               >
                 {/* Colorful Animated Background on Hover */}
@@ -119,7 +120,7 @@ export const Services: React.FC = () => {
                     </span>
                     <h3 className={cn(
                       "text-3xl sm:text-4xl md:text-5xl font-black font-editorial uppercase tracking-tighter transition-all duration-500",
-                      isHovered ? service.colorClass + " scale-105 origin-left drop-shadow-xl" : "text-foreground"
+                      isHovered ? service.colorClass + " scale-[1.02] origin-left drop-shadow-xl" : "text-foreground"
                     )}>
                       {service.title}
                     </h3>
@@ -145,7 +146,7 @@ export const Services: React.FC = () => {
                         backgroundColor: isHovered ? "var(--foreground)" : "transparent",
                         color: isHovered ? "var(--background)" : "var(--foreground)",
                       }}
-                      className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-foreground/20 flex items-center justify-center shrink-0 transition-colors duration-300 shadow-md"
+                      className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-foreground/20 flex items-center justify-center shrink-0 transition-all duration-300 shadow-md"
                     >
                       <ArrowRight size={24} />
                     </motion.div>
@@ -171,8 +172,8 @@ export const Services: React.FC = () => {
                             <span
                               key={aud}
                               className={cn(
-                                "text-xs font-mono uppercase tracking-widest px-4 py-1.5 border transition-colors duration-300 shadow-sm backdrop-blur-sm",
-                                isHovered ? `${service.borderClass} bg-background/50 ${service.colorClass}` : "border-foreground/20 text-muted-foreground"
+                                "text-xs font-mono uppercase tracking-widest px-4 py-1.5 rounded-full border transition-all duration-300 shadow-sm backdrop-blur-md",
+                                isHovered ? `${service.borderClass} bg-background/70 ${service.colorClass} shadow-md` : "border-foreground/20 text-muted-foreground"
                               )}
                             >
                               {aud}

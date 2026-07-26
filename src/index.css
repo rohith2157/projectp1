@@ -190,6 +190,43 @@ html.lenis, html.lenis body {
   color: var(--color-studio-bg);
 }
 
+/* Premium Glassmorphic Cards & UI Utilities */
+.glass-card {
+  background: rgba(255, 252, 225, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(66, 67, 61, 0.12);
+}
+
+.dark .glass-card {
+  background: rgba(14, 16, 15, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 252, 225, 0.08);
+}
+
+.glass-card-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-hover:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-studio-gold);
+  box-shadow: 0 20px 40px -15px rgba(184, 156, 101, 0.15);
+}
+
+.glow-pill-primary {
+  background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+  box-shadow: 0 4px 20px -2px rgba(59, 130, 246, 0.4);
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, #F59E0B 0%, #B89C65 50%, #EAB308 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /* Rocket Loader Styles */
 .loader-container {
   position: absolute;

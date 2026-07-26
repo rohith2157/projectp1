@@ -4,29 +4,23 @@ import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motio
 export const CustomCursor: React.FC = () => {
   const [hoverType, setHoverType] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
-  // Core coordinates
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
+  // High precision mouse coordinates
+  const mouseX = useMotionValue(-100);
+  const mouseY = useMotionValue(-100);
 
-  // Springs for smooth ring lag
-  const ringX = useSpring(mouseX, { damping: 30, stiffness: 220, mass: 0.6 });
-  const ringY = useSpring(mouseY, { damping: 30, stiffness: 220, mass: 0.6 });
+  // Butter-smooth spring physics (ultra-responsive trailing effect)
+  const springConfig = { damping: 28, stiffness: 450, mass: 0.15 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
 
-  // Speed and stretch calculation on rapid movement
+  // Velocity stretch calculation for dynamic liquid movement
   const [stretch, setStretch] = useState({ scaleX: 1, scaleY: 1, angle: 0 });
 
   useEffect(() => {
-    // Detect touch device
-    const checkMobile = () => {
-      setIsMobile('ontouchstart' in window || navigator.maxTouchPoints > 0);
-    };
-    checkMobile();
-
     let lastX = 0;
     let lastY = 0;
-    let lastTime = Date.now();
+    let lastTime = performance.now();
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
@@ -34,23 +28,20 @@ export const CustomCursor: React.FC = () => {
       
       if (!isVisible) setIsVisible(true);
 
-      // Compute cursor stretch based on velocity
-      const now = Date.now();
-      const dt = now - lastTime || 1;
+      // Compute velocity & stretch direction
+      const now = performance.now();
+      const dt = Math.max(now - lastTime, 1);
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
       const velocity = Math.hypot(dx, dy) / dt;
 
-      // Limit max stretch
-      const maxStretch = 0.35;
-      const computedStretch = Math.min(velocity * 0.12, maxStretch);
-      
-      // Calculate angle of movement
+      const maxStretch = 0.3;
+      const computedStretch = Math.min(velocity * 0.08, maxStretch);
       const angle = Math.atan2(dy, dx) * (180 / Math.PI);
 
       setStretch({
         scaleX: 1 + computedStretch,
-        scaleY: 1 - computedStretch,
+        scaleY: Math.max(1 - computedStretch, 0.7),
         angle
       });
 
@@ -62,26 +53,34 @@ export const CustomCursor: React.FC = () => {
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (target) {
+        // Check for specific data-cursor attributes
         const cursorDataEl = target.closest('[data-cursor]') as HTMLElement | null;
         if (cursorDataEl) {
           const type = cursorDataEl.getAttribute('data-cursor');
           setHoverType(type);
-        } else {
-          const isInteractive = target.closest('a, button, [role="button"], input, select, textarea, .cursor-pointer') !== null;
-          setHoverType(isInteractive ? 'interactive' : null);
+          return;
         }
+
+        // Check for inputs/textareas
+        const isInput = target.closest('input, textarea, [contenteditable="true"]') !== null;
+        if (isInput) {
+          setHoverType('text');
+          return;
+        }
+
+        // Check for clickable/interactive elements
+        const isInteractive = target.closest('a, button, [role="button"], select, .cursor-pointer, [onClick]') !== null;
+        setHoverType(isInteractive ? 'interactive' : null);
       }
     };
 
     const handleMouseLeaveWindow = () => setIsVisible(false);
     const handleMouseEnterWindow = () => setIsVisible(true);
 
-    if (!isMobile) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseover', handleMouseOver);
-      document.addEventListener('mouseleave', handleMouseLeaveWindow);
-      document.addEventListener('mouseenter', handleMouseEnterWindow);
-    }
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('mouseover', handleMouseOver, { passive: true });
+    document.addEventListener('mouseleave', handleMouseLeaveWindow);
+    document.addEventListener('mouseenter', handleMouseEnterWindow);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -89,57 +88,62 @@ export const CustomCursor: React.FC = () => {
       document.removeEventListener('mouseleave', handleMouseLeaveWindow);
       document.removeEventListener('mouseenter', handleMouseEnterWindow);
     };
-  }, [mouseX, mouseY, isVisible, isMobile]);
+  }, [mouseX, mouseY, isVisible]);
 
-  if (isMobile || !isVisible) return null;
+  if (!isVisible) return null;
 
-  // Determine cursor dimensions and labels based on hover context
+  // Determine dynamic visual styles based on hover state
   const getCursorStyle = () => {
     switch (hoverType) {
       case 'view':
         return {
-          width: 76,
-          height: 76,
+          width: 72,
+          height: 72,
           text: 'VIEW',
-          color: '#B89C65',
-          border: '1px solid #B89C65',
-          bg: 'rgba(184, 156, 101, 0.12)',
-        };
-      case 'drag':
-        return {
-          width: 76,
-          height: 76,
-          text: 'DRAG',
-          color: '#121212',
-          border: '1px solid #121212',
-          bg: 'rgba(18, 18, 18, 0.08)',
+          color: '#10B981',
+          border: '1.5px solid #10B981',
+          bg: 'rgba(16, 185, 129, 0.15)',
+          glow: '0 0 25px rgba(16, 185, 129, 0.4)',
         };
       case 'copy':
         return {
-          width: 76,
-          height: 76,
+          width: 72,
+          height: 72,
           text: 'COPY',
           color: '#B89C65',
-          border: '1px solid #B89C65',
-          bg: 'rgba(184, 156, 101, 0.15)',
+          border: '1.5px solid #B89C65',
+          bg: 'rgba(184, 156, 101, 0.18)',
+          glow: '0 0 25px rgba(184, 156, 101, 0.4)',
+        };
+      case 'text':
+        return {
+          width: 4,
+          height: 24,
+          text: '',
+          color: '#10B981',
+          border: 'none',
+          bg: '#10B981',
+          glow: '0 0 10px rgba(16, 185, 129, 0.8)',
         };
       case 'interactive':
         return {
-          width: 44,
-          height: 44,
+          width: 46,
+          height: 46,
           text: '',
-          color: '#B89C65',
-          border: '1px solid #B89C65',
-          bg: 'rgba(184, 156, 101, 0.08)',
+          color: '#10B981',
+          border: '1.5px solid rgba(16, 185, 129, 0.8)',
+          bg: 'rgba(16, 185, 129, 0.12)',
+          glow: '0 0 20px rgba(16, 185, 129, 0.3)',
         };
       default:
         return {
-          width: 20,
-          height: 20,
+          width: 24,
+          height: 24,
           text: '',
-          color: 'var(--studio-dark)',
-          border: '1.5px solid var(--studio-stone)',
-          bg: 'transparent',
+          color: '#B89C65',
+          border: '1.5px solid rgba(184, 156, 101, 0.6)',
+          bg: 'rgba(184, 156, 101, 0.05)',
+          glow: '0 0 12px rgba(184, 156, 101, 0.2)',
         };
     }
   };
@@ -147,12 +151,12 @@ export const CustomCursor: React.FC = () => {
   const currentStyle = getCursorStyle();
 
   return (
-    <>
-      {/* Outer Lagging Ring (Stretches in movement direction) */}
+    <div className="fixed inset-0 pointer-events-none z-[999999] overflow-hidden select-none">
+      {/* Outer Smooth Motion Aura Ring */}
       <motion.div
         style={{
-          x: ringX,
-          y: ringY,
+          x: smoothX,
+          y: smoothY,
           translateX: '-50%',
           translateY: '-50%',
           rotate: stretch.angle,
@@ -164,25 +168,26 @@ export const CustomCursor: React.FC = () => {
           height: currentStyle.height,
           backgroundColor: currentStyle.bg,
           borderColor: currentStyle.color,
-          borderStyle: 'solid',
+          boxShadow: currentStyle.glow,
+          borderRadius: hoverType === 'text' ? '2px' : '9999px',
         }}
         transition={{
           type: 'spring',
-          stiffness: 400,
-          damping: 24,
-          mass: 0.4
+          stiffness: 550,
+          damping: 32,
+          mass: 0.1,
         }}
-        className="fixed top-0 left-0 rounded-full pointer-events-none z-[9999] flex items-center justify-center border"
+        className="fixed top-0 left-0 border pointer-events-none flex items-center justify-center backdrop-blur-[1px]"
       >
-        {/* Floating Text label overlay inside cursor */}
+        {/* Floating Label Text inside Cursor */}
         <AnimatePresence>
           {currentStyle.text && (
             <motion.span
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.7 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.25 }}
-              className="text-[9px] font-mono tracking-widest font-black"
+              exit={{ opacity: 0, scale: 0.7 }}
+              transition={{ duration: 0.15 }}
+              className="text-[10px] font-mono tracking-widest font-black"
               style={{ color: currentStyle.color, transform: `rotate(${-stretch.angle}deg)` }}
             >
               {currentStyle.text}
@@ -191,7 +196,7 @@ export const CustomCursor: React.FC = () => {
         </AnimatePresence>
       </motion.div>
 
-      {/* Inner Precision center dot */}
+      {/* Inner Real-Time Instant Pointer Dot */}
       <motion.div
         style={{
           x: mouseX,
@@ -200,11 +205,12 @@ export const CustomCursor: React.FC = () => {
           translateY: '-50%',
         }}
         animate={{
-          scale: hoverType ? 0 : 1,
-          backgroundColor: '#B89C65',
+          scale: hoverType === 'text' ? 0 : hoverType === 'interactive' ? 0.6 : 1,
+          backgroundColor: hoverType ? '#10B981' : '#B89C65',
         }}
-        className="fixed top-0 left-0 w-1.5 h-1.5 rounded-full pointer-events-none z-[9999]"
+        transition={{ duration: 0.1 }}
+        className="fixed top-0 left-0 w-2 h-2 rounded-full pointer-events-none shadow-[0_0_8px_rgba(16,185,129,0.8)]"
       />
-    </>
+    </div>
   );
 };
